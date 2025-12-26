@@ -29,12 +29,13 @@ contract ATM {
     }
 
     function withdraw(uint256 amount) public whenNotPaused {
-        require(amount > 0, "Invalid amount");
-        require(balances[msg.sender] >= amount, "Insufficient balance");
+    require(amount > 0, "Invalid amount");
+    require(balances[msg.sender] >= amount, "Insufficient balance");
 
-        balances[msg.sender] -= amount;
-        payable(msg.sender).transfer(amount);
-    }
+    balances[msg.sender] -= amount;
+    (bool success, ) = payable(msg.sender).call{value: amount}("");
+    require(success, "Transfer failed");
+}
 
     function checkBalance() public view returns (uint256) {
         return balances[msg.sender];
